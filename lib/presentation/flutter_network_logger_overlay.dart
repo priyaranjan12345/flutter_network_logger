@@ -1,22 +1,17 @@
 import 'package:flutter/material.dart';
-import 'network_logger_screen.dart';
-import 'network_logger_service.dart';
+import 'flutter_network_logger_screen.dart';
+import '../provider/flutter_network_logger_notifier.dart';
 
 /// Wrap your app's root widget with this to show a floating network logger button.
-class NetworkLoggerOverlay extends StatelessWidget {
+class FlutterNetworkLoggerOverlay extends StatelessWidget {
   final Widget child;
-  const NetworkLoggerOverlay({super.key, required this.child});
+  const FlutterNetworkLoggerOverlay({super.key, required this.child});
 
   @override
   Widget build(BuildContext context) {
     return Directionality(
       textDirection: TextDirection.ltr,
-      child: Stack(
-        children: [
-          child,
-          const _FloatingLogButton(),
-        ],
-      ),
+      child: Stack(children: [child, const _FloatingLogButton()]),
     );
   }
 }
@@ -39,12 +34,12 @@ class _FloatingLogButtonState extends State<_FloatingLogButton> {
       child: GestureDetector(
         onPanUpdate: (d) => setState(() => _offset += d.delta),
         child: ListenableBuilder(
-          listenable: NetworkLoggerService.instance,
+          listenable: FlutterNetworkLoggerNotifier.instance,
           builder: (context, _) {
-            final count = NetworkLoggerService.instance.logs.length;
+            final count = FlutterNetworkLoggerNotifier.instance.logs.length;
             return FloatingActionButton.small(
               heroTag: 'network_logger_fab',
-              onPressed: () => NetworkLoggerScreen.show(context),
+              onPressed: () => FlutterNetworkLoggerScreen.show(context),
               backgroundColor: Colors.deepPurple,
               child: Badge(
                 isLabelVisible: count > 0,

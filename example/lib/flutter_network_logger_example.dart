@@ -21,28 +21,28 @@ class _NetworkLoggerExampleState extends State<NetworkLoggerExample> {
 
   @override
   void initState() {
+    super.initState();
+
     dio = Dio();
     httpClient = HttpClient();
     graphQLClient = GraphQLClient(
       link: HttpLink('https://graphqlzero.almansi.me/api'),
       cache: GraphQLCache(),
     );
-    super.initState();
   }
 
   @override
   void dispose() {
     dio.close();
     httpClient.close();
+
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Example'),
-      ),
+      appBar: AppBar(title: Text('Example')),
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 16),
         child: Column(
@@ -53,7 +53,7 @@ class _NetworkLoggerExampleState extends State<NetworkLoggerExample> {
               onPressed: () async {
                 // dio example
                 final response = await dio.get(
-                  'https://jsonplaceholder.typicode.com/posts/1',
+                  'https://jsonplaceholder.typicode.com/posts',
                 );
                 log(response.data.toString());
               },
@@ -94,7 +94,7 @@ class _NetworkLoggerExampleState extends State<NetworkLoggerExample> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          NetworkLoggerScreen.show(context);
+          FlutterNetworkLoggerScreen.show(context);
         },
         child: const Icon(Icons.wifi),
       ),

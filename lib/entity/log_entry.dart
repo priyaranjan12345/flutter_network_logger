@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-class NetworkLogEntry {
+class LogEntry {
   final String id;
   final String method;
   final Uri url;
@@ -14,7 +14,7 @@ class NetworkLogEntry {
   DateTime? responseTime;
   String? error;
 
-  NetworkLogEntry({
+  LogEntry({
     required this.id,
     required this.method,
     required this.url,
@@ -26,7 +26,8 @@ class NetworkLogEntry {
   Duration? get duration => responseTime?.difference(requestTime);
 
   bool get isComplete => statusCode != null || error != null;
-  bool get isError => error != null || (statusCode != null && statusCode! >= 400);
+  bool get isError =>
+      error != null || (statusCode != null && statusCode! >= 400);
 
   String get formattedRequestBody {
     if (requestBody == null) return '';

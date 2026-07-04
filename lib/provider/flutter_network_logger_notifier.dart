@@ -1,23 +1,24 @@
 import 'package:flutter/foundation.dart';
-import 'network_log_entry.dart';
+import '../entity/log_entry.dart';
 
-class NetworkLoggerService extends ChangeNotifier {
-  NetworkLoggerService._();
-  static final instance = NetworkLoggerService._();
+class FlutterNetworkLoggerNotifier extends ChangeNotifier {
+  FlutterNetworkLoggerNotifier._();
+  static final instance = FlutterNetworkLoggerNotifier._();
 
-  final List<NetworkLogEntry> _logs = [];
-  List<NetworkLogEntry> get logs => List.unmodifiable(_logs);
+  final List<LogEntry> _logs = [];
+  List<LogEntry> get logs => List.unmodifiable(_logs);
 
   int _maxLogs = 200;
+  int get maxLogs => _maxLogs;
   set maxLogs(int value) => _maxLogs = value;
 
-  void addLog(NetworkLogEntry entry) {
+  void addLog(LogEntry entry) {
     _logs.insert(0, entry);
     if (_logs.length > _maxLogs) _logs.removeLast();
     notifyListeners();
   }
 
-  void updateLog(String id, void Function(NetworkLogEntry) update) {
+  void updateLog(String id, void Function(LogEntry) update) {
     final entry = _logs.firstWhere(
       (e) => e.id == id,
       orElse: () => throw StateError('Log not found'),

@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'network_log_entry.dart';
-import 'network_logger_service.dart';
+import '../entity/log_entry.dart';
+import '../provider/flutter_network_logger_notifier.dart';
 
-class NetworkLoggerScreen extends StatelessWidget {
-  const NetworkLoggerScreen({super.key});
+class FlutterNetworkLoggerScreen extends StatelessWidget {
+  const FlutterNetworkLoggerScreen({super.key});
 
   static void show(BuildContext context) {
     Navigator.of(context).push(
-      MaterialPageRoute(builder: (_) => const NetworkLoggerScreen()),
+      MaterialPageRoute(builder: (_) => const FlutterNetworkLoggerScreen()),
     );
   }
 
@@ -20,14 +20,14 @@ class NetworkLoggerScreen extends StatelessWidget {
         actions: [
           IconButton(
             icon: const Icon(Icons.delete_outline),
-            onPressed: () => NetworkLoggerService.instance.clear(),
+            onPressed: () => FlutterNetworkLoggerNotifier.instance.clear(),
           ),
         ],
       ),
       body: ListenableBuilder(
-        listenable: NetworkLoggerService.instance,
+        listenable: FlutterNetworkLoggerNotifier.instance,
         builder: (context, _) {
-          final logs = NetworkLoggerService.instance.logs;
+          final logs = FlutterNetworkLoggerNotifier.instance.logs;
           if (logs.isEmpty) {
             return const Center(child: Text('No network requests yet'));
           }
@@ -43,7 +43,7 @@ class NetworkLoggerScreen extends StatelessWidget {
 }
 
 class _LogTile extends StatelessWidget {
-  final NetworkLogEntry entry;
+  final LogEntry entry;
   const _LogTile({required this.entry});
 
   @override
@@ -102,15 +102,18 @@ class _MethodBadge extends StatelessWidget {
       ),
       child: Text(
         method,
-        style:
-            TextStyle(fontSize: 10, fontWeight: FontWeight.bold, color: color),
+        style: TextStyle(
+          fontSize: 10,
+          fontWeight: FontWeight.bold,
+          color: color,
+        ),
       ),
     );
   }
 }
 
 class _LogDetailScreen extends StatelessWidget {
-  final NetworkLogEntry entry;
+  final LogEntry entry;
   const _LogDetailScreen({required this.entry});
 
   @override
@@ -119,8 +122,10 @@ class _LogDetailScreen extends StatelessWidget {
       length: 3,
       child: Scaffold(
         appBar: AppBar(
-          title: Text('${entry.method} ${entry.url.path}',
-              style: const TextStyle(fontSize: 14)),
+          title: Text(
+            '${entry.method} ${entry.url.path}',
+            style: const TextStyle(fontSize: 14),
+          ),
           bottom: const TabBar(
             tabs: [
               Tab(text: 'Overview'),
@@ -142,7 +147,7 @@ class _LogDetailScreen extends StatelessWidget {
 }
 
 class _OverviewTab extends StatelessWidget {
-  final NetworkLogEntry entry;
+  final LogEntry entry;
   const _OverviewTab({required this.entry});
 
   @override
@@ -154,10 +159,11 @@ class _OverviewTab extends StatelessWidget {
         _InfoRow('Method', entry.method),
         _InfoRow('Status', entry.statusCode?.toString() ?? 'Pending'),
         _InfoRow(
-            'Duration',
-            entry.duration != null
-                ? '${entry.duration!.inMilliseconds}ms'
-                : 'N/A'),
+          'Duration',
+          entry.duration != null
+              ? '${entry.duration!.inMilliseconds}ms'
+              : 'N/A',
+        ),
         _InfoRow('Request Time', entry.requestTime.toIso8601String()),
         if (entry.responseTime != null)
           _InfoRow('Response Time', entry.responseTime!.toIso8601String()),
@@ -168,7 +174,7 @@ class _OverviewTab extends StatelessWidget {
 }
 
 class _RequestTab extends StatelessWidget {
-  final NetworkLogEntry entry;
+  final LogEntry entry;
   const _RequestTab({required this.entry});
 
   @override
@@ -190,7 +196,7 @@ class _RequestTab extends StatelessWidget {
 }
 
 class _ResponseTab extends StatelessWidget {
-  final NetworkLogEntry entry;
+  final LogEntry entry;
   const _ResponseTab({required this.entry});
 
   @override
@@ -203,8 +209,9 @@ class _ResponseTab extends StatelessWidget {
       children: [
         if (entry.responseHeaders != null) ...[
           _SectionHeader('Headers', entry.responseHeaders.toString()),
-          ...entry.responseHeaders!.entries
-              .map((e) => _InfoRow(e.key, e.value)),
+          ...entry.responseHeaders!.entries.map(
+            (e) => _InfoRow(e.key, e.value),
+          ),
           const SizedBox(height: 16),
         ],
         _SectionHeader('Body', entry.formattedResponseBody),
@@ -232,17 +239,19 @@ class _InfoRow extends StatelessWidget {
         children: [
           SizedBox(
             width: 110,
-            child: Text(label,
-                style:
-                    const TextStyle(fontWeight: FontWeight.w600, fontSize: 12)),
+            child: Text(
+              label,
+              style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 12),
+            ),
           ),
           Expanded(
             child: Text(
               value,
               style: TextStyle(
-                  fontSize: 12,
-                  color: isError ? Colors.red : null,
-                  fontFamily: 'monospace'),
+                fontSize: 12,
+                color: isError ? Colors.red : null,
+                fontFamily: 'monospace',
+              ),
             ),
           ),
         ],
@@ -260,8 +269,10 @@ class _SectionHeader extends StatelessWidget {
   Widget build(BuildContext context) {
     return Row(
       children: [
-        Text(title,
-            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
+        Text(
+          title,
+          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
+        ),
         const Spacer(),
         IconButton(
           icon: const Icon(Icons.copy, size: 16),
@@ -269,7 +280,9 @@ class _SectionHeader extends StatelessWidget {
             Clipboard.setData(ClipboardData(text: copyContent));
             ScaffoldMessenger.of(context).showSnackBar(
               const SnackBar(
-                  content: Text('Copied'), duration: Duration(seconds: 1)),
+                content: Text('Copied'),
+                duration: Duration(seconds: 1),
+              ),
             );
           },
         ),

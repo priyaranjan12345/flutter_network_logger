@@ -9,7 +9,7 @@ void main() {
   WidgetsFlutterBinding.ensureInitialized();
 
   // initialize the logger
-  HttpOverrides.global = NetworkLoggerHttpOverrides();
+  HttpOverrides.global = FlutterNetworkLoggerHttpOverrides();
 
   runApp(const ExampleApp());
 }
